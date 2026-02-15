@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 using WebApi.Models;
 using WebApi.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 using WebApi.Services;
-using System;
+
 namespace WebApi.Controllers
 {
     [ApiController]
@@ -50,7 +48,7 @@ namespace WebApi.Controllers
                 Purpose = reservation.Purpose,
                 StartTime = reservation.StartTime,
                 EndTime = reservation.EndTime,
-                Status = (WebApi.Models.ReservationStatus)reservation.Status,
+                Status = reservation.Status,
                 ApprovedBy = string.Empty,
                 ApprovedAt = reservation.ApprovedAt
             };
@@ -76,18 +74,18 @@ namespace WebApi.Controllers
 
             await _context.SaveChangesAsync();
 
-            var room2 = await _context.Rooms.FindAsync(reservation.RoomId);
-            var user2 = await _context.Users.FindAsync(reservation.UserId);
+            var room = await _context.Rooms.FindAsync(reservation.RoomId);
+            var user = await _context.Users.FindAsync(reservation.UserId);
             var approver = await _context.Users.FindAsync(reservation.ApproverId);
-            var responseDto2 = new ReservationResponseDto
+            var responseDto = new ReservationResponseDto
             {
                 Id = reservation.Id,
-                RoomName = room2?.Name ?? string.Empty,
-                UserName = user2?.FullName ?? string.Empty,
+                RoomName = room?.Name ?? string.Empty,
+                UserName = user?.FullName ?? string.Empty,
                 Purpose = reservation.Purpose,
                 StartTime = reservation.StartTime,
                 EndTime = reservation.EndTime,
-                Status = (WebApi.Models.ReservationStatus)reservation.Status,
+                Status = reservation.Status,
                 ApprovedBy = approver?.FullName ?? string.Empty,
                 ApprovedAt = reservation.ApprovedAt
             };
@@ -95,7 +93,7 @@ namespace WebApi.Controllers
             {
                 Success = true,
                 Message = "Reservation approved successfully",
-                Data = responseDto2
+                Data = responseDto
             });
         }
     }

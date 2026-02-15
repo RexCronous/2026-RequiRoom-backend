@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+
 namespace WebApi.Models.DTOs
 {
     public class CreateReservationDto

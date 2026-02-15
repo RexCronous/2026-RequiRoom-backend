@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 using WebApi.Models;
 using WebApi.Models.DTOs;
 using WebApi.Services;
-using System;
+
 namespace WebApi.Controllers
 {
     [ApiController]
@@ -27,7 +26,7 @@ namespace WebApi.Controllers
                 FullName = dto.FullName!,
                 Email = dto.Email!,
                 PasswordHash = UserHelpers.HashPassword(dto.Password!),
-                Role = WebApi.Models.UserRole.User,
+                Role = UserRole.User,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -39,7 +38,7 @@ namespace WebApi.Controllers
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
-                Role = (WebApi.Models.UserRole)user.Role,
+                Role = user.Role,
                 CreatedAt = user.CreatedAt
             };
             return Ok(new ApiResponse<UserResponseDto>
@@ -71,7 +70,7 @@ namespace WebApi.Controllers
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
-                Role = (WebApi.Models.UserRole)user.Role,
+                Role = user.Role,
                 CreatedAt = user.CreatedAt
             };
             return Ok(new ApiResponse<UserResponseDto>

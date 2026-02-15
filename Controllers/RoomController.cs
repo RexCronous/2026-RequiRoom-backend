@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 using WebApi.Models;
 using WebApi.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System;
+
 namespace WebApi.Controllers
 {
     [ApiController]
@@ -30,7 +29,6 @@ namespace WebApi.Controllers
                 Location = r.Location,
                 IsAvailable = r.IsAvailable
             }).ToList();
-            // If you want to return a list, change ApiResponse<RoomResponseDto> to ApiResponse<List<RoomResponseDto>>
             return Ok(new ApiResponse<List<RoomResponseDto>>
             {
                 Success = true,
