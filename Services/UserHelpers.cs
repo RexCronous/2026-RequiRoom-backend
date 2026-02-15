@@ -8,10 +8,16 @@ namespace WebApi.Services
             return 1;
         }
 
+        // Hash password using BCrypt
         public static string HashPassword(string password)
         {
-            // TODO: Implement actual password hashing
-            return password;
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        // Verify password using BCrypt
+        public static bool VerifyPassword(string password, string passwordHash)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, passwordHash);
         }
     }
 }
