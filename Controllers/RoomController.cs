@@ -37,6 +37,37 @@ namespace WebApi.Controllers
             });
         }
 
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+            if (room == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Room not found"
+                });
+            }
+
+            var responseDto = new RoomResponseDto
+            {
+                Id = room.Id,
+                Name = room.Name,
+                Capacity = room.Capacity,
+                Location = room.Location,
+                IsAvailable = room.IsAvailable
+            };
+
+            return Ok(new ApiResponse<RoomResponseDto>
+            {
+                Success = true,
+                Message = "Room retrieved successfully",
+                Data = responseDto
+            });
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CreateRoomDto dto)
@@ -66,6 +97,68 @@ namespace WebApi.Controllers
                 Success = true,
                 Message = "Room created successfully",
                 Data = responseDto
+            });
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, CreateRoomDto dto)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+            if (room == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Room not found"
+                });
+            }
+
+            room.Name = dto.Name!;
+            room.Capacity = dto.Capacity;
+            room.Location = dto.Location!;
+            room.IsAvailable = true;
+            room.UpdatedAt = DateTime.UtcNow;
+
+            _context.Rooms.Update(room);
+            await _context.SaveChangesAsync();
+
+            var responseDto = new RoomResponseDto
+            {
+                Id = room.Id,
+                Name = room.Name,
+                Capacity = room.Capacity,
+                Location = room.Location,
+                IsAvailable = room.IsAvailable
+            };
+            return Ok(new ApiResponse<RoomResponseDto>
+            {
+                Success = true,
+                Message = "Room updated successfully",
+                Data = responseDto
+            });
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+            if (room == null)            {
+                return NotFound(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Room not found"
+                });
+            }
+
+            _context.Rooms.Remove(room);
+            await _context.SaveChangesAsync();
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Room deleted successfully"
             });
         }
     }
