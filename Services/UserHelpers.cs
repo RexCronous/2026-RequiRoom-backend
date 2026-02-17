@@ -1,12 +1,22 @@
+using System.Security.Claims;
+
 namespace WebApi.Services
 {
     public static class UserHelpers
     {
-        public static int GetCurrentUserId()
+
+        public static int GetCurrentUserId(this ClaimsPrincipal user)
         {
-            // TODO: Implement actual logic to get current user id from claims
-            return 1;
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                throw new UnauthorizedAccessException("User ID claim is missing or invalid");
+            }
+
+            return userId;
         }
+
 
         // Hash password using BCrypt
         public static string HashPassword(string password)

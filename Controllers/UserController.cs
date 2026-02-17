@@ -147,7 +147,7 @@ namespace WebApi.Controllers
             });
         }
 
-        [HttpPost("update/{id}")]
+        [HttpPut("update/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> Update(int id, UpdateUserRequestDto dto)
         {

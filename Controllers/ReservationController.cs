@@ -4,6 +4,7 @@ using WebApi.Models;
 using WebApi.Models.DTOs;
 using WebApi.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace WebApi.Controllers
 {
@@ -47,7 +48,7 @@ namespace WebApi.Controllers
         [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> GetUserReservation(int id)
         {
-            var userId = UserHelpers.GetCurrentUserId();
+            var userId = User.GetCurrentUserId();
             var reservations = await _context.Reservations.Where(r => r.UserId == id).ToListAsync();
             var reservationDtos = reservations.Select(r => new ReservationResponseDto
             {
@@ -70,7 +71,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Create(CreateReservationDto dto)
         {
             if (dto.EndTime <= dto.StartTime)
@@ -79,7 +80,7 @@ namespace WebApi.Controllers
             var reservation = new Reservation
             {
                 RoomId = dto.RoomId,
-                UserId = UserHelpers.GetCurrentUserId(),
+                UserId = User.GetCurrentUserId(),
                 Purpose = dto.Purpose!,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
@@ -120,7 +121,7 @@ namespace WebApi.Controllers
             if (reservation == null)
                 return NotFound();
 
-            if (reservation.UserId != UserHelpers.GetCurrentUserId())
+            if (reservation.UserId != User.GetCurrentUserId())
                 return Unauthorized();
 
             reservation.RoomId = dto.RoomId;
@@ -162,7 +163,7 @@ namespace WebApi.Controllers
             if (reservation == null)
                 return NotFound();
 
-            if (reservation.UserId != UserHelpers.GetCurrentUserId())
+            if (reservation.UserId != User.GetCurrentUserId())
                 return Unauthorized();
 
             reservation.Status = ReservationStatus.Cancelled;
@@ -198,7 +199,7 @@ namespace WebApi.Controllers
                 return NotFound();
 
             reservation.Status = ReservationStatus.Approved;
-            reservation.ApproverId = UserHelpers.GetCurrentUserId();
+            reservation.ApproverId = User.GetCurrentUserId();
             reservation.ApprovedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -265,9 +266,6 @@ namespace WebApi.Controllers
             var reservation = await _context.Reservations.FindAsync(id);
             if (reservation == null)
                 return NotFound();
-
-            if (reservation.UserId != UserHelpers.GetCurrentUserId())
-                return Unauthorized();
 
             _context.Reservations.Remove(reservation);
             await _context.SaveChangesAsync();

@@ -6,6 +6,9 @@ namespace WebApi.Models.DTOs
     {
         [Required]
         public int RoomId { get; set; }
+        
+        [Required]
+        public int UserId { get; set; }
 
         [Required]
         public required string Purpose { get; set; }
